@@ -6,28 +6,30 @@ import numpy as np
 import ezPickle as p
 from scipy.misc import imsave
 
-
+df = pd.DataFrame()
 print("Please enter name of input folder")
 in_folder = input()
 print("Please enter name of output folder")
 out_folder = input()
 le = p.load('le')
 data = []
-max_len = 0
-new_rate = 16000
-for file_name in glob.glob(in_folder+"/*"):
+lengths = []
+count = 0
+files = glob.glob(in_folder+"/*")
+for file_name in files :
 	print(file_name)
 	rate, data = wavfile.read(file_name)
 	print("\t read")
 	print('\t',data.shape, " Frames at ", rate)
-	new_data = resample(data,  round(data.shape[0]/rate * new_rate))
-	spectrogram = librosa.feature.melspectrogram(y=new_data.astype(float), sr=new_rate)
-	print("\t sampled")
+	print('\t', count/len(files))
+	#new_data = resample(data,  round(data.shape[0]/rate * new_rate))
+	spectrogram = librosa.feature.melspectrogram(y=data.astype(float), sr=rate)
+	print("\t Converted")
 	print('\t',spectrogram.shape)
 	imsave(out_folder+'/' + file_name[file_name.index('/'):] +".png", spectrogram)
 	print("\twrote")
-	if spectrogram.shape[1] > max_len:
-		max_len = spectrogram.shape[1]
-		max_shape = spectrogram.shape
-print(max_len)
-print(max_shape)
+	lengths.append(spectrogram.shape[1])
+	count+=1
+series = pd.Series(lengths)
+p.save(series, 'series')
+print(series.describe())

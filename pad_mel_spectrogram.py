@@ -9,11 +9,15 @@ from scipy.misc import imsave, imread
 
 
 max_len = 0
-max_len = 1800
-for file_name in glob.glob(input("Enter folder name\n")+'/*'):
+max_len = 500
+files = glob.glob(input("Enter folder name\n")+'/*')
+count = 0
+for file_name in files:
 	print(file_name)
 	spectrogram = imread(file_name)
 	print("\t read")
+	spectrogram = spectrogram[:,:max_len]
+	print(spectrogram.shape)
 	spectrogram = np.pad(spectrogram, ((0,0),(0,max_len - spectrogram.shape[1])), 'constant')
 	
 	print("\t padded")
@@ -23,5 +27,7 @@ for file_name in glob.glob(input("Enter folder name\n")+'/*'):
 	if spectrogram.shape[1] > max_len:
 		max_len = spectrogram.shape[1]
 		max_shape = spectrogram.shape
+	print(count/len(files))
+	count+=1	
 print(max_len)
 
