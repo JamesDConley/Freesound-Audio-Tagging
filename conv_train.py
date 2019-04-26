@@ -74,11 +74,11 @@ def both_generator(batch_size):
 		parity = not parity
 		
 model = Sequential()
-model.add(Conv2D(32, 3, strides=(3,3), activation='relu', input_shape = ( 128, max_len,1)))
-model.add(Conv2D(16, 3, strides=(1,1), activation='relu'))
+model.add(Conv2D(64, 3, strides=(3,3), activation='relu', input_shape = ( 128, max_len,1)))
+model.add(Conv2D(128, 3, strides=(1,1), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2), strides=None))
-model.add(Conv2D(16, 3, strides=(1,1), activation='relu'))
-model.add(Conv2D(16, 3, strides=(1,1), activation='relu'))
+#model.add(Conv2D(16, 3, strides=(1,1), activation='relu'))
+#model.add(Conv2D(16, 3, strides=(1,1), activation='relu'))
 #model.add(MaxPooling2D(pool_size=(2,2), strides=None))
 model.add(Flatten())
 model.add(Dense(256, activation='sigmoid'))
@@ -88,8 +88,10 @@ opt = Adadelta()
 
 p_model = multi_gpu_model(model, gpus=3)
 p_model.compile(loss='mean_squared_error',optimizer=opt, metrics=['mean_squared_error'])
-batch_size = 30
+batch_size = 42
+#p_model = p.load('conv_model2')
 p_model.fit_generator(generator(batch_size), epochs=10,  verbose=1,  shuffle=False, steps_per_epoch=math.ceil((len(files))/batch_size),max_queue_size=1, callbacks = [cb])
+p_model.save_weights("model.h5")
 p.save(p_model, 'conv_model1')		
 			
 			

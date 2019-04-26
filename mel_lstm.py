@@ -63,7 +63,7 @@ def audio_generator(sounds_per_batch):
 				data_list = []
 				label_list = []
 
-batch_size = 51
+batch_size = 102
 
 model = Sequential()
 model.add(Masking(mask_value=0, input_shape=(max_len, 128)))
